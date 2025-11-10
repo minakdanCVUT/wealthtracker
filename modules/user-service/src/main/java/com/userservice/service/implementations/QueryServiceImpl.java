@@ -1,11 +1,12 @@
-package com.userservice.service;
+package com.userservice.service.implementations;
 
 import com.core.exceptions.NullableViolation;
 import com.core.exceptions.ServerException;
 import com.core.exceptions.UniquenessViolation;
-import com.core.exceptions.UserAlreadyExistsException;
 import com.userservice.model.User;
 import com.userservice.repository.UserRepository;
+import com.userservice.service.interfaces.QueryService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class QueryServiceImpl implements QueryService{
+public class QueryServiceImpl implements QueryService {
     private final UserRepository repository;
 
     private final String PostgreSQLUniquenessViolation = "23505";
@@ -21,7 +22,7 @@ public class QueryServiceImpl implements QueryService{
 
 
     @Override
-    public void saveUser(User user) {
+    public void saveUser(User user) throws UniquenessViolation, NullableViolation, ServerException{
         try{
             repository.save(user);
         }catch (DataIntegrityViolationException exception){
@@ -38,5 +39,10 @@ public class QueryServiceImpl implements QueryService{
                 throw new ServerException();
             }
         }
+    }
+
+    @Override
+    public User findById(Long userId) throws EntityNotFoundException{
+        return repository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User with this id " + userId + " not found"));
     }
 }

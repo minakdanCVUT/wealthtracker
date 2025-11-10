@@ -1,4 +1,4 @@
-package com.userservice.service;
+package com.userservice.service.interfaces;
 
 import com.userservice.dto.CreateUserRequest;
 import com.userservice.dto.UserDTO;
